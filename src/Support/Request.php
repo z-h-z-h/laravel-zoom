@@ -9,7 +9,15 @@ use GuzzleHttp\Client;
 class Request
 {
     protected $client;
+    protected $api_key;
+    protected $api_secret;
 
+    public function __construct(string $api_key, string $api_secret)
+    {
+        $this->api_key = $api_key;
+        $this->api_secret = $api_secret;
+    }
+    
     public function bootPrivateApplication()
     {
         $options = [
@@ -28,12 +36,12 @@ class Request
     public function generateJWT()
     {
         $token = [
-            'iss' => config('zoom.api_key'),
+            'iss' => $this->api_key,
             // The benefit of JWT is expiry tokens, we'll set this one to expire in 1 minute
             'exp' => time() + 60,
         ];
 
-        return JWT::encode($token, config('zoom.api_secret'));
+        return JWT::encode($token, $this->api_secret);
     }
 
     public function get($end_point, $query = '')
